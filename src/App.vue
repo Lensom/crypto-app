@@ -14,9 +14,11 @@
             $ {{ result.USD }}
           </div>
           <div class="card-eur">
-            &#8364 {{ result.EUR }}
+            &#8364; {{ result.EUR }}
           </div>
         </div>
+        <button @click="stopUpdate">Остановить</button>
+        {{ diff }}
       </div>
     </div>
   </div>
@@ -29,18 +31,43 @@ import axios from 'axios';
 export default {
       data:()=> ({
         url: "https://min-api.cryptocompare.com/data/pricemulti?fsyms=BTC,ETH,EOS,XRP,ZEC&tsyms=USD,EUR",
-        results: [],
+        results: {},
+        cashResults: {},
+        intervalTimer: null,
         imgSrc: [
           'http://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/256/Bitcoin-BTC-icon.png',
-          'https://cdn.iconscout.com/icon/free/png-256/ethereum-1-283135.png'
+          'https://cdn.iconscout.com/icon/free/png-256/ethereum-1-283135.png',
+          'https://zona-1.ru/800/600/http/pooha.net/images/cryptocurrency130318-9.png',
+          'https://cdn.iconscout.com/icon/free/png-256/ripple-13-646080.png',
+          'https://www.macupdate.com/images/icons256/58202.png'
         ]
 
       }),
-
+      methods: {
+          updateData(){
+            axios.get(this.url).then(response => {
+            this.results = response.data
+            })
+          },
+          stopUpdate() {
+            clearInterval(this.intervalTimer);
+          },
+          startUpdate() {
+            this.intervalTimer = setInterval(() => {
+              axios.get(this.url).then(response => {
+              this.cashResults = this.results;
+              this.results = response.data;
+              })
+            }, 5000)
+          }          
+      },
+      computed:{
+          diff() {
+            return this.results;
+          }
+      },
       mounted() {
-        axios.get(this.url).then(response => {
-          this.results = response.data
-        })
+        this.startUpdate();
       }
     };
 
@@ -155,8 +182,8 @@ body {
 .main .card .card-name .logo {
   position: absolute;
   width: 20%;
-  top: 0;
-  left: 0;
+  top: 15px;
+  left: 30px;
 }
 
 </style>
