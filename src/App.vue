@@ -1,26 +1,23 @@
 <template>
-  <div class="container" id="app">
-    <div class="row">
-      <div class="col-md-12">
-        <!-- <div class="title text-center">Cryptocurrency Pricing</div> -->
-      </div>
-      <div class="col-md-4 main">
+  <div id="app">
+      <div class="main">
         <div class="card" v-for="(result, index, i) in results" :key="index">
           <div class="card-name">
             {{ index }}
             <img :src="imgSrc[i]" alt="Crypto logotype" class="logo">
           </div>
           <div class="card-usd">
-            $ {{ result.USD }}
+            <span class="icon">$</span> {{ result.USD }}
+            <i class="fa" :class="usdClass(index)"></i>
           </div>
           <div class="card-eur">
-            &#8364; {{ result.EUR }}
+            <span class="icon">&#8364;</span> {{ result.EUR }}
+            <i class="eur fa" :class="euroClass(index)"></i>
           </div>
         </div>
-        <button @click="stopUpdate">Остановить</button>
-        {{ diff }}
+        <button @click="stopUpdate" v-if="!show" class="btn btn-danger">Остановить</button>
+        <button @click="startUpdate" v-if="show" class="btn btn-success">Продолжить</button>
       </div>
-    </div>
   </div>
 
 </template>
@@ -30,9 +27,10 @@ import axios from 'axios';
 
 export default {
       data:()=> ({
+        show: false,
         url: "https://min-api.cryptocompare.com/data/pricemulti?fsyms=BTC,ETH,EOS,XRP,ZEC&tsyms=USD,EUR",
-        results: {},
-        cashResults: {},
+        results: {"BTC":{"USD":0,"EUR":0},"ETH":{"USD":0,"EUR":0},"EOS":{"USD":0,"EUR":0},"XRP":{"USD":0,"EUR":0},"ZEC":{"USD":0,"EUR":0}},
+        cashResults: {"BTC":{"USD":0,"EUR":0},"ETH":{"USD":0,"EUR":0},"EOS":{"USD":0,"EUR":0},"XRP":{"USD":0,"EUR":0},"ZEC":{"USD":0,"EUR":0}},
         intervalTimer: null,
         imgSrc: [
           'http://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/256/Bitcoin-BTC-icon.png',
@@ -50,21 +48,60 @@ export default {
             })
           },
           stopUpdate() {
+            this.show = !this.show;
             clearInterval(this.intervalTimer);
           },
           startUpdate() {
-            this.intervalTimer = setInterval(() => {
+              this.intervalTimer = setInterval(() => {
               axios.get(this.url).then(response => {
               this.cashResults = this.results;
               this.results = response.data;
               })
-            }, 5000)
+            }, 3000);
+            this.show = false;
           }          
       },
       computed:{
-          diff() {
-            return this.results;
+          usdObj() {
+              return key => {
+                  let result = this.results[key];
+                  let cashRes = this.cashResults[key];
+                  let difUsd = result.USD - cashRes.USD;
+                  return difUsd;
+              }
+          },
+          euroObj() {
+              return key => {
+                  let result = this.results[key];
+                  let cashRes = this.cashResults[key];
+                  let difEur = result.EUR - cashRes.EUR;
+                  return difEur;
+              }
+          },
+          usdClass() {
+              return key => {
+                let usdRes = this.usdObj(key);
+                if (usdRes > 0 ) {
+                    return 'fa-sort-up';
+                } else if (usdRes < 0) {
+                    return 'fa-sort-down'
+                } else {
+                    return 'fa-sort';
+                }  
+              }
+          },
+          euroClass() {
+              return key => {
+               let euroRes = this.euroObj(key);
+                if (euroRes > 0 ) {
+                    return 'fa-sort-up';
+                } else if (euroRes < 0) {
+                    return 'fa-sort-down'
+                } else {
+                    return 'fa-sort';
+                }
           }
+        }
       },
       mounted() {
         this.startUpdate();
@@ -128,7 +165,45 @@ body {
     line-height: 1.65;
     font-family: Montserrat, sans-serif;
     overflow-x: hidden;
-    padding: 40px
+    padding: 40px;
+}
+
+.fa {
+    position: absolute;
+    right: 35%;
+    font-size: 18px;
+}
+
+.fa-sort-up {
+    color: green;
+    top: 46px;
+}
+
+.fa-sort-down {
+    color: red;
+}
+
+.fa-sort {
+    top: 42px;
+    color: gray;
+    transform: rotate(90deg);
+}
+
+.eur.fa.fa-sort-up {
+    top: 73px;
+}
+
+.eur.fa.fa-sort-down {
+    top: 65px;
+}
+
+.eur.fa.fa-sort {
+    top: 68px;
+}
+
+.icon {
+    position: absolute;
+    left: 36%;
 }
 
 .img-responsive {
@@ -162,8 +237,10 @@ body {
     padding: 10px;
     border: 1px solid rgba(51, 51, 51, .24);
     -webkit-border-radius: 10px;
-    border-radius: 10px;
-    text-align: center
+    border-radius: 15px;
+    text-align: center;
+    min-width: 320px;
+    max-width: 320px;
 }
 
 .main .card {
@@ -182,8 +259,8 @@ body {
 .main .card .card-name .logo {
   position: absolute;
   width: 20%;
-  top: 15px;
-  left: 30px;
+  top: 21px;
+  left: 25px;
 }
 
 </style>
