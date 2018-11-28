@@ -1,18 +1,18 @@
 <template>
   <div id="app">
       <div class="main">
-        <div class="card" v-for="(result, index, i) in results" :key="index">
+        <div class="card" v-for="(result, key, i) in results" :key="key">
           <div class="card-name">
-            {{ index }}
+            {{ key }}
             <img :src="imgSrc[i]" alt="Crypto logotype" class="logo">
           </div>
           <div class="card-usd">
             <span class="icon">$</span> {{ result.USD }}
-            <i class="fa" :class="usdClass(index)"></i>
+            <i class="fa" :class="usdClass(key)"></i>
           </div>
           <div class="card-eur">
             <span class="icon">&#8364;</span> {{ result.EUR }}
-            <i class="eur fa" :class="euroClass(index)"></i>
+            <i class="eur fa" :class="euroClass(key)"></i>
           </div>
         </div>
         <button @click="stopUpdate" v-if="!show" class="btn btn-danger">Остановить</button>
