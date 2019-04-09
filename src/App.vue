@@ -35,7 +35,7 @@ export default {
         imgSrc: [
           'http://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/256/Bitcoin-BTC-icon.png',
           'https://cdn.iconscout.com/icon/free/png-256/ethereum-1-283135.png',
-          'https://zona-1.ru/800/600/http/pooha.net/images/cryptocurrency130318-9.png',
+          'https://cdn2.iconfinder.com/data/icons/cryptocurrency-2-line/128/eos_EOS_coin_cryptocurrency_digital_crypto_currency-512.png',
           'https://cdn.iconscout.com/icon/free/png-256/ripple-13-646080.png',
           'https://www.macupdate.com/images/icons256/58202.png'
         ]
